@@ -9,6 +9,7 @@ app.use(express.json());
 
 // Import the models used in these routes - DO NOT MODIFY
 const { Puppy } = require('./db/models');
+const { where } = require('sequelize');
 
 // Index of all puppies - DO NOT MODIFY
 app.get('/puppies', async (req, res, next) => {
@@ -25,6 +26,27 @@ app.get('/puppies', async (req, res, next) => {
 // Respond to the request by sending a success message
 app.post('/puppies/build', async (req, res, next) => {
     // Your code here
+    const { name, age_yrs, breed, weight_lbs, microchipped } = req.body;
+
+    const newPuppy = await Puppy.build(
+        {
+            name: name,
+            ageYrs: age_yrs,
+            breed: breed,
+            weightLbs: weight_lbs,
+            microchipped: microchipped
+        }
+    );
+
+    await newPuppy.save();
+
+    const result = await Puppy.findOne(
+        {
+            where: { name: name }
+        }
+    );
+
+    res.json(result);
 })
 
 // STEP 2
@@ -34,6 +56,28 @@ app.post('/puppies/build', async (req, res, next) => {
 // Respond to the request by sending a success message
 app.post('/puppies/create', async (req, res, next) => {
     // Your code here
+    const { name, age_yrs, breed, weight_lbs, microchipped } = req.body;
+
+    const newPuppy = await Puppy.create(
+        {
+            name: name,
+            ageYrs: age_yrs,
+            breed,
+            weightLbs: weight_lbs,
+            microchipped,
+        }
+    );
+
+    const result = await Puppy.findOne(
+        {
+            where: { name: name }
+        }
+    );
+
+    res.json({
+        message: 'Successfully added another puppy!',
+        result
+    });
 })
 
 
